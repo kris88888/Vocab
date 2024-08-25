@@ -1,6 +1,5 @@
 package com.example.vocabbuilder.ui.composables
 
-import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -32,7 +31,7 @@ fun CreateWordBottomSheet(
     sheetState: SheetState,
     onDismiss: () -> Unit,
     onSave: () -> Unit,
-    onEvent: (word: VocabEvent) -> Unit, // todo check if this fn is really required
+    onEvent: (word: VocabEvent) -> Unit,
     word: VocabEntry? = null
 ) {
     var wordState by remember {
@@ -46,7 +45,6 @@ fun CreateWordBottomSheet(
     }
 
     ModalBottomSheet(onDismissRequest = {
-        Log.d("**************", "CreateWordBottomSheet: onDismiss called")
         onDismiss()
     },
         sheetState = sheetState,

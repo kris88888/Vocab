@@ -10,6 +10,8 @@ sealed interface VocabEvent {
     data class setUsage(val usage: String): VocabEvent
     data class setSynonym(val synonym: String): VocabEvent
     data class setAntonym(val antonym: String): VocabEvent
+
+    data class EditWord(val vocabEntry: VocabEntry): VocabEvent
     object ShowDialog: VocabEvent
     object HideDialog: VocabEvent
     data class SortWords(val order: SortOrder): VocabEvent

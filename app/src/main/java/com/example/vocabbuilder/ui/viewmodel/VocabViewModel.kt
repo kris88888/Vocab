@@ -31,23 +31,20 @@ class VocabViewModel(
     private val _state = MutableStateFlow(VocabUiState())
 
     var uiState = combine(_state, _sortOrder) { vocabState, sortOrder ->
-        Log.d(TAG, ":ui state flow ****** = ${vocabState.wordsList}, ${sortOrder}")
-        val sortedList = when(_sortOrder.value) {
+        val sortedList = when (_sortOrder.value) {
             SortOrder.ASC -> _state.value.wordsList.sortedBy { it.word }
             SortOrder.DESC -> _state.value.wordsList.sortedByDescending { it.word }
             SortOrder.NONE -> _state.value.wordsList
         }
 
         vocabState.copy(
-            wordsList = sortedList,
-            sortOrder = sortOrder
+            wordsList = sortedList, sortOrder = sortOrder
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), _state.value)
 
     init {
         viewModelScope.launch {
             dao.getAllWords().collectLatest { vocabList ->
-                Log.d(TAG, ": GOT LIST = $vocabList")
                 _state.update {
                     it.copy(wordsList = vocabList)
                 }
@@ -89,7 +86,11 @@ class VocabViewModel(
                 _state.update {
                     it.copy(
                         isAddingWord = false,
-                        word = "", meaning = "", usage = "", synonyms = "", antonyms = ""
+                        word = "",
+                        meaning = "",
+                        usage = "",
+                        synonyms = "",
+                        antonyms = ""
                     )
                 }
             }
@@ -132,6 +133,24 @@ class VocabViewModel(
                 _state.update {
                     it.copy(word = event.word)
                 }
+            }
+
+            is VocabEvent.EditWord -> {
+                Log.d("****", "* SAVED = ${event.vocabEntry}")
+                viewModelScope.launch {
+                    dao.upsertWord(event.vocabEntry)
+                }
+                _state.update {
+                    it.copy(
+                        isAddingWord = false,
+                        word = "",
+                        meaning = "",
+                        usage = "",
+                        synonyms = "",
+                        antonyms = ""
+                    )
+                }
+
             }
         }
     }
